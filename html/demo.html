@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Data Training using GAR(p)</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-07-14"><meta name="DC.source" content="demo.m"><style type="text/css">
+      --><title>Data Training using GAR(p)</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-07-15"><meta name="DC.source" content="demo.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Data Training using GAR(p)</h1><!--introduction--><p>GAR combines a kernel function and AR analysis with <i>p</i>-order differences to train a model.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Prepare for featured training data X, y</a></li><li><a href="#2">(Optional) Difference, prone to improve the accuracy</a></li><li><a href="#3">Tuning model parameters to train data model using GAR(p)</a></li><li><a href="#7">Predict the test data</a></li><li><a href="#8">(Optional) Add differences back to get real predicted value</a></li></ul></div><h2>Prepare for featured training data X, y<a name="1"></a></h2><pre class="codeinput">load(<span class="string">'gar_AS'</span>);
+  </style></head><body><div class="content"><h1>Data Training using GAR(p)</h1><!--introduction--><p>GAR combines a kernel function and AR analysis with <i>p</i>-order differences to train a model.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Prepare for featured training data X, y</a></li><li><a href="#2">(Optional) Difference, prone to improve the accuracy</a></li><li><a href="#3">Tuning model parameters to train data model using GAR(p)</a></li><li><a href="#4">Tune <i>ro</i> parameters</a></li><li><a href="#5">Tune model parameter <i>sigma</i> and <i>lambda</i></a></li><li><a href="#7">Predict the test data</a></li><li><a href="#8">(Optional) Add differences back to get real predicted value</a></li></ul></div><h2>Prepare for featured training data X, y<a name="1"></a></h2><pre class="codeinput">load(<span class="string">'gar_AS'</span>);
 
 TestAim = 2;
 X = S(:, TestAim);
@@ -74,6 +74,10 @@ y = A(:, TestAim);
 idx = X &gt; 0 &amp; y &gt; 0;
 X = X(idx, :);
 y = y(idx, :);
+y0 = y;  <span class="comment">% original y, no differences</span>
+</pre><h2>(Optional) Difference, prone to improve the accuracy<a name="2"></a></h2><pre class="codeinput">difforder = 1;
+X = diff(X, difforder);
+y = diff(y, difforder);
 
 n = size(X, 1);
 p = floor(0.7 * n);
@@ -81,28 +85,20 @@ X_train = X(1:p, :);
 y_train = y(1:p, :);
 X_test = X(p+1 : end, :);
 y_test = y(p+1 : end, :);
-</pre><h2>(Optional) Difference, prone to improve the accuracy<a name="2"></a></h2><pre class="codeinput">difforder = 1;
-X_train = diff(X_train, difforder);
-y_train = diff(y_train, difforder);
 </pre><h2>Tuning model parameters to train data model using GAR(p)<a name="3"></a></h2><pre class="codeinput">sigma = 1:5;
 lambda = 1:2;
 
 <span class="keyword">for</span> ro1 = -1 : 0.1 : 0
     <span class="keyword">for</span> ro2 = -1 : 0.1 : 0
-</pre><p>Tune <i>ro</i> parameters</p><pre class="codeinput">        ro = [ro1, ro2];
-</pre><p>Tune model parameter <i>sigma</i> and <i>lambda</i></p><pre class="codeinput">        model = gartune(X_train, y_train, ro, sigma, lambda);
+</pre><h2>Tune <i>ro</i> parameters<a name="4"></a></h2><pre class="codeinput">        ro = [ro1, ro2];
+</pre><h2>Tune model parameter <i>sigma</i> and <i>lambda</i><a name="5"></a></h2><pre class="codeinput">        model = gartune(X_train, y_train, ro, sigma, lambda);
 </pre><pre class="codeinput">    <span class="keyword">end</span>
 <span class="keyword">end</span>
-</pre><h2>Predict the test data<a name="7"></a></h2><pre class="codeinput">y_predict = garpredict(X_test, model, X_train, y_train);
-</pre><pre class="codeoutput error">Undefined function or variable 'y_test'.
-
-Error in garpredict (line 26)
-py = gen_yp([y_train, y_test], p, model.ro) + UX;
-
-Error in demo (line 46)
-y_predict = garpredict(X_test, model, X_train, y_train);
-</pre><h2>(Optional) Add differences back to get real predicted value<a name="8"></a></h2><pre class="codeinput">ay_predict = y_predict + y(p+1 : end-1);
-ay_test = y_test + y(p+1 : end-1);
+</pre><h2>Predict the test data<a name="7"></a></h2><pre class="codeinput">order = 2;
+y_history = y(p - order + 1 : end - 1);
+y_predict = garpredict(X_test, y_history, model);
+</pre><h2>(Optional) Add differences back to get real predicted value<a name="8"></a></h2><pre class="codeinput">ay_predict = y_predict + y0(p+1 : end-1);
+ay_test = y_test + y0(p+1 : end-1);
 acc = 1 - mean(abs(ay_predict - ay_test) ./ max(ay_predict, ay_test));
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
@@ -110,6 +106,7 @@ acc = 1 - mean(abs(ay_predict - ay_test) ./ max(ay_predict, ay_test));
 % GAR combines a kernel function and AR analysis with _p_-order
 % differences to train a model.
 %
+
 
 %% Prepare for featured training data X, y
 load('gar_AS');
@@ -120,6 +117,13 @@ y = A(:, TestAim);
 idx = X > 0 & y > 0;
 X = X(idx, :);
 y = y(idx, :);
+y0 = y;  % original y, no differences
+
+
+%% (Optional) Difference, prone to improve the accuracy
+difforder = 1;
+X = diff(X, difforder);
+y = diff(y, difforder);
 
 n = size(X, 1);
 p = floor(0.7 * n);
@@ -128,10 +132,6 @@ y_train = y(1:p, :);
 X_test = X(p+1 : end, :);
 y_test = y(p+1 : end, :);
 
-%% (Optional) Difference, prone to improve the accuracy
-difforder = 1;
-X_train = diff(X_train, difforder);
-y_train = diff(y_train, difforder);
 
 
 %% Tuning model parameters to train data model using GAR(p)
@@ -140,23 +140,23 @@ lambda = 1:2;
 
 for ro1 = -1 : 0.1 : 0
     for ro2 = -1 : 0.1 : 0
-       %% 
-       % Tune _ro_ parameters
+       %% Tune _ro_ parameters
         ro = [ro1, ro2];
-       %% 
-       % Tune model parameter _sigma_ and _lambda_
+       %% Tune model parameter _sigma_ and _lambda_
         model = gartune(X_train, y_train, ro, sigma, lambda);
     end
 end
 
 
 %% Predict the test data
-y_predict = garpredict(X_test, model, X_train, y_train);
+order = 2;
+y_history = y(p - order + 1 : end - 1);
+y_predict = garpredict(X_test, y_history, model);
 
 
 %% (Optional) Add differences back to get real predicted value
-ay_predict = y_predict + y(p+1 : end-1);
-ay_test = y_test + y(p+1 : end-1);
+ay_predict = y_predict + y0(p+1 : end-1);
+ay_test = y_test + y0(p+1 : end-1);
 acc = 1 - mean(abs(ay_predict - ay_test) ./ max(ay_predict, ay_test));
 
 

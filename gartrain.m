@@ -1,42 +1,48 @@
-function [mse, acc] = gartrain(X, y, ro, sigma, lambda)
+function model = gartrain(X, y, ro, sigma, lambda)
 %GARTRAIN  
 %
 %
 
+% Make sure parameters are properly set
 assert(sigma ~= 0);
 
-% Partition for training data
 n = size(X, 1);
-p = floor(0.7 * n);
-q = n - p;
+p = length(ro);  % p-order AR
 
-% Train
-X1 = X(1:p, :);
-y1 = y(1:p, :);
-% Test
 X2 = X(p+1 : end, :);
-y2 = y(p+1 : end, :);
+y2 = y(p+1 : end);  
+y_history = y(1 : end-1);  % to predict using history
 
-PM = gen_param_matrix(p, ro);
+PM = gen_param_matrix(n, -ro);
 
-K = zeros(p);
-for i = 1:p
-    for j = 1:p
-        K(i, j) = exp(-(norm(X1(i,:)-X1(j,:),2))^2/(2*sigma^2));
+K = zeros(n);
+for i = 1:n
+    for j = 1:n
+        K(i, j) = exp(-(norm(X(i,:)-X(j,:),2))^2/(2*sigma^2));
     end
 end
 
-KT = zeros(q, p);
-for i = 1:q
-    for j = 1:p
-        KT(i, j) = exp(-(norm(X2(i,:)-X1(j,:),2))^2/(2*sigma^2));
+KT = zeros(n - p, n);
+for i = 1 : n-p
+    for j = 1 : n
+        KT(i, j) = exp(-(norm(X2(i,:)-X(j,:),2))^2/(2*sigma^2));
     end
 end
 
-UX = KT * pinv(K * K + lambda * K) * K * PM * y1;
-YP = gen_yp(y, p, ro) + UX;
+UX = KT * pinv(K * K + lambda * K) * K * PM * y;
+YP = gen_yp(y_history, ro) + UX;
 
-mse = mean((YP - y2).^2);
-acc = 1 - mean(abs(UX - YP) ./ max(UX, YP));
+
+model.ro = ro;
+model.sigma = sigma;
+model.lambda = lambda;
+
+model.X = X;
+model.y = y;
+model.true = y2;
+model.predict = YP;
+
+model.mse = mean((YP - y2).^2);
+model.acc = 1 - mean(abs(y2 - YP) ./ max(y2, YP));
 
 end

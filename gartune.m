@@ -1,22 +1,23 @@
-function model = gartune(X, y, ro, sigma, lambda)
+function best_model = gartune(X, y, ro, sigma, lambda)
 %GARTUNE   
 %
 %
 %
 
 min_mse = intmax;
-model.sigma = NaN;
-model.lambda = NaN;
-model.ro = ro;
+best_model.sigma = NaN;
+best_model.lambda = NaN;
+best_model.ro = ro;
 
 for s = sigma
     for l = lambda
-        [mse, acc] = gartrain(X, y, ro, s, l);
-        if mse < min_mse
-            min_mse = mse;
-            model.sigma = s;
-            model.lambda = l;
-            model.mse = mse;
+        model = gartrain(X, y, ro, s, l);
+        if model.mse < min_mse
+            min_mse = model.mse;
+            best_model = model;
+            best_model.sigma = s;
+            best_model.lambda = l;
+            best_model.mse = model.mse;
         end
     end 
 end
