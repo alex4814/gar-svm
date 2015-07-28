@@ -1,19 +1,24 @@
-function model = gartrain(X, y, ro, sigma, lambda)
-%GARTRAIN  
+function model = gartrain(X, y, rou, sigma, lambda)
+%GARTRAIN  Train data to get a training model.
+%   model = GARTRAIN(X, y, [-0.7, -0.5], 2, 3)
+%   
+%   rho: an array of parameters for autoregressive model of order p
+%   sigma: a free parameter used in RBF kernel
+%   lambda: a paramater which deals with overfitting
 %
-%
+%   See also GARTUNE, GARPREDICT
 
 % Make sure parameters are properly set
 assert(sigma ~= 0);
 
 n = size(X, 1);
-p = length(ro);  % p-order AR
+p = length(rou);  % p-order AR
 
 X2 = X(p+1 : end, :);
 y2 = y(p+1 : end);  
 y_history = y(1 : end-1);  % to predict using history
 
-PM = gen_param_matrix(n, -ro);
+PM = gen_param_matrix(n, -rou);
 
 K = zeros(n);
 for i = 1:n
@@ -30,10 +35,10 @@ for i = 1 : n-p
 end
 
 UX = KT * pinv(K * K + lambda * K) * K * PM * y;
-YP = gen_yp(y_history, ro) + UX;
+YP = gen_yp(y_history, rou) + UX;
 
 
-model.ro = ro;
+model.ro = rou;
 model.sigma = sigma;
 model.lambda = lambda;
 

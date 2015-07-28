@@ -1,7 +1,18 @@
 function py = garpredict(X_current, y_history, model, X, y)
-%GARPREDICT  
+%GARPREDICT  Predict for specific dataset using trained model, and only
+%produce one predict value.
 %
+%   X_current: the feature matrix for test data, same processing as the
+%   training data
+%   y_history: the values for continuous days before the day to predict;
+%   the length of y_history equals the order of rho parameters
+%   model: the trained model produced by GARTRAIN or GARTUNE
+%   (Optional) X: another feature matrix helpful for predicting; if ommit,
+%   using the training X
+%   (Optional) y: another true values vector attached with (Optional) X; 
+%   if ommit, using the training y
 %
+%   See also GARTRAIN, GARTUNE
 
 minargs = 3;
 maxargs = 5;
@@ -14,12 +25,12 @@ end
 
 p = size(X, 1);
 q = size(X_current, 1);
-n = length(model.ro);   % n-order AR
+n = length(model.rou);   % n-order AR
 
 % Make sure parameters are properly set
 assert(q == length(y_history) - n + 1);
 
-PM = gen_param_matrix(p, model.ro);
+PM = gen_param_matrix(p, model.rou);
 
 K = zeros(p);
 for i = 1:p
@@ -36,6 +47,6 @@ for i = 1:q
 end
 
 UX = KT * pinv(K * K + model.lambda * K) * K * PM * y;
-py = gen_yp(y_history, model.ro) + UX;
+py = gen_yp(y_history, model.rou) + UX;
 
 end

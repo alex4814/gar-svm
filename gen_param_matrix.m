@@ -3,7 +3,7 @@ function ltm = gen_param_matrix(order, params)
 %parameters.
 %   B = GEN_PARAM_MATRIX(6, [-0.1, 0.2])
 %
-%   See also _, _
+%   It's a help function for internal use.
 
 n = length(params);
 assert(order >= n + 1);
