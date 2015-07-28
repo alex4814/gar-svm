@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Data Training using RBF-AR(p)</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-07-24"><meta name="DC.source" content="demo.m"><style type="text/css">
+      --><title>Data Training using RBF-AR(p)</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-07-28"><meta name="DC.source" content="demo.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Data Training using RBF-AR(p)</h1><!--introduction--><p>RBF-AR(p) combines a kernel function and AR analysis with <i>p</i>-order differences to train a model.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Prepare for featured training data X, y</a></li><li><a href="#2">(Optional) Difference, prone to improve the accuracy</a></li><li><a href="#3">Tuning model parameters to train data model using RBF-AR(p)</a></li><li><a href="#4">Tune <i>ro</i> parameters</a></li><li><a href="#5">Tune model parameter <i>sigma</i> and _lambda</a></li><li><a href="#7">Predict the test data</a></li><li><a href="#8">(Optional) Add differences back to get real predicted value</a></li></ul></div><h2>Prepare for featured training data X, y<a name="1"></a></h2><pre class="codeinput">load(<span class="string">'td1'</span>);
+  </style></head><body><div class="content"><h1>Data Training using RBF-AR(p)</h1><!--introduction--><p>RBF-AR(p) combines a kernel function and AR analysis with <i>p</i>-order differences to train a model.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Prepare for featured training data X, y</a></li><li><a href="#2">(Optional) Difference, prone to improve the accuracy</a></li><li><a href="#3">Tuning model parameters to train data model using RBF-AR(p)</a></li><li><a href="#4">Tune <i>ro</i> parameters</a></li><li><a href="#5">Tune model parameter <i>sigma</i> and _lambda</a></li><li><a href="#7">Predict the test data</a></li><li><a href="#8">(Optional) Add differences back to get real predicted value</a></li></ul></div><h2>Prepare for featured training data X, y<a name="1"></a></h2><pre class="codeinput">load(<span class="string">'dataset/td1'</span>);
 X = X1;
 y = y1;
 y0 = y;  <span class="comment">% original y, no differences</span>
@@ -84,15 +84,15 @@ y_test = y(q+1 : end, :);
 lambda = 1:2;
 
 p = 2;  <span class="comment">% the length of _ro_ parameters, the order for AR analysis</span>
-rou = zeros(p, 1);
+rho = zeros(p, 1);
 
-mse = intmax;
+bestmodel.mse = intmax;
 
-<span class="keyword">for</span> rou1 = -1 : 0.1 : 0
-    <span class="keyword">for</span> rou2 = -1 : 0.1 : 0
-</pre><h2>Tune <i>ro</i> parameters<a name="4"></a></h2><pre class="codeinput">        rou = [rou1, rou2];
-</pre><h2>Tune model parameter <i>sigma</i> and _lambda<a name="5"></a></h2><pre class="codeinput">        model = gartune(X_train, y_train, rou, sigma, lambda);
-        <span class="keyword">if</span> exist(<span class="string">'bestmodel'</span>, <span class="string">'var'</span>) == 0 || bestmodel.mse &gt; model.mse
+<span class="keyword">for</span> rho1 = -1 : 0.1 : 0
+    <span class="keyword">for</span> rho2 = -1 : 0.1 : 0
+</pre><h2>Tune <i>ro</i> parameters<a name="4"></a></h2><pre class="codeinput">        rho = [rho1, rho2];
+</pre><h2>Tune model parameter <i>sigma</i> and _lambda<a name="5"></a></h2><pre class="codeinput">        model = gartune(X_train, y_train, rho, sigma, lambda);
+        <span class="keyword">if</span> bestmodel.mse &gt; model.mse
             bestmodel = model;
         <span class="keyword">end</span>
 </pre><pre class="codeinput">    <span class="keyword">end</span>
@@ -111,7 +111,7 @@ acc = 1 - mean(abs(ay_predict - ay_test) ./ max(ay_predict, ay_test));
 
 
 %% Prepare for featured training data X, y
-load('td1');
+load('dataset/td1');
 X = X1;
 y = y1;
 y0 = y;  % original y, no differences
@@ -135,17 +135,17 @@ sigma = 1:10;
 lambda = 1:2;
 
 p = 2;  % the length of _ro_ parameters, the order for AR analysis
-rou = zeros(p, 1);
+rho = zeros(p, 1);
 
-mse = intmax;
+bestmodel.mse = intmax;
 
-for rou1 = -1 : 0.1 : 0
-    for rou2 = -1 : 0.1 : 0
+for rho1 = -1 : 0.1 : 0
+    for rho2 = -1 : 0.1 : 0
        %% Tune _ro_ parameters
-        rou = [rou1, rou2];
+        rho = [rho1, rho2];
        %% Tune model parameter _sigma_ and _lambda
-        model = gartune(X_train, y_train, rou, sigma, lambda);
-        if exist('bestmodel', 'var') == 0 || bestmodel.mse > model.mse
+        model = gartune(X_train, y_train, rho, sigma, lambda);
+        if bestmodel.mse > model.mse
             bestmodel = model;
         end
     end

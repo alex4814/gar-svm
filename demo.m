@@ -29,17 +29,17 @@ sigma = 1:10;
 lambda = 1:2;
 
 p = 2;  % the length of _ro_ parameters, the order for AR analysis
-rou = zeros(p, 1);
+rho = zeros(p, 1);
 
-mse = intmax;
+bestmodel.mse = intmax;
 
-for rou1 = -1 : 0.1 : 0
-    for rou2 = -1 : 0.1 : 0
+for rho1 = -1 : 0.1 : 0
+    for rho2 = -1 : 0.1 : 0
        %% Tune _ro_ parameters
-        rou = [rou1, rou2];
+        rho = [rho1, rho2];
        %% Tune model parameter _sigma_ and _lambda
-        model = gartune(X_train, y_train, rou, sigma, lambda);
-        if exist('bestmodel', 'var') == 0 || bestmodel.mse > model.mse
+        model = gartune(X_train, y_train, rho, sigma, lambda);
+        if bestmodel.mse > model.mse
             bestmodel = model;
         end
     end

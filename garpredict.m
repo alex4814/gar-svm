@@ -25,12 +25,12 @@ end
 
 p = size(X, 1);
 q = size(X_current, 1);
-n = length(model.rou);   % n-order AR
+n = length(model.rho);   % n-order AR
 
 % Make sure parameters are properly set
 assert(q == length(y_history) - n + 1);
 
-PM = gen_param_matrix(p, model.rou);
+PM = gen_param_matrix(p, model.rho);
 
 K = zeros(p);
 for i = 1:p
@@ -47,6 +47,6 @@ for i = 1:q
 end
 
 UX = KT * pinv(K * K + model.lambda * K) * K * PM * y;
-py = gen_yp(y_history, model.rou) + UX;
+py = gen_yp(y_history, model.rho) + UX;
 
 end

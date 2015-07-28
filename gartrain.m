@@ -1,4 +1,4 @@
-function model = gartrain(X, y, rou, sigma, lambda)
+function model = gartrain(X, y, rho, sigma, lambda)
 %GARTRAIN  Train data to get a training model.
 %   model = GARTRAIN(X, y, [-0.7, -0.5], 2, 3)
 %   
@@ -12,13 +12,13 @@ function model = gartrain(X, y, rou, sigma, lambda)
 assert(sigma ~= 0);
 
 n = size(X, 1);
-p = length(rou);  % p-order AR
+p = length(rho);  % p-order AR
 
 X2 = X(p+1 : end, :);
 y2 = y(p+1 : end);  
 y_history = y(1 : end-1);  % to predict using history
 
-PM = gen_param_matrix(n, -rou);
+PM = gen_param_matrix(n, -rho);
 
 K = zeros(n);
 for i = 1:n
@@ -35,10 +35,10 @@ for i = 1 : n-p
 end
 
 UX = KT * pinv(K * K + lambda * K) * K * PM * y;
-YP = gen_yp(y_history, rou) + UX;
+YP = gen_yp(y_history, rho) + UX;
 
 
-model.ro = rou;
+model.rho = rho;
 model.sigma = sigma;
 model.lambda = lambda;
 

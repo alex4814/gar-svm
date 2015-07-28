@@ -11,7 +11,7 @@ function best_model = gartune(X, y, rho, sigma, lambda)
 min_mse = intmax;
 best_model.sigma = NaN;
 best_model.lambda = NaN;
-best_model.ro = rho;
+best_model.rho = rho;
 
 for s = sigma
     for l = lambda
