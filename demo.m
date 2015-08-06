@@ -25,8 +25,8 @@ y_test = y(q+1 : end, :);
 
 
 %% Tuning model parameters to train data model using RBF-AR(p)
-sigma = 1:10;
-lambda = 1:2;
+sigma = 1:1;
+lambda = 1:1;
 
 p = 2;  % the length of _ro_ parameters, the order for AR analysis
 rho = zeros(p, 1);
@@ -34,9 +34,10 @@ rho = zeros(p, 1);
 rho_lower = [-1, -1];
 rho_upper = [0, 0];
 rho_step = [0.1, 0.1];
+iteration = 2;
 
 %% Tune model parameter _sigma_ and _lambda
-bestmodel = gartune(X_train, y_train, rho_lower, rho_upper, rho_step, sigma, lambda);
+bestmodel = gartune(X_train, y_train, rho_lower, rho_upper, rho_step, iteration, sigma, lambda);
 
 
 %% Predict the test data

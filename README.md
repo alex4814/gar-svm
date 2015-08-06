@@ -4,6 +4,7 @@ RBF-AR(p) is a learning model that is a combination of *[Radial Basis Function(R
 [1]: https://en.wikipedia.org/wiki/Radial_basis_function
 [2]: https://en.wikipedia.org/wiki/Autoregressive_model
 
+Latest version can be found here: www.bruceluo.net
 
 ## Introduction
 RBF-AR(p) is devised for learning a data model when individual feature and time series analysis are both taken into consideration.
@@ -31,6 +32,11 @@ We have written a complete demo to illustrate how to use RBF-AR(p) step by step.
 
 ## Licence
 RBF-AR(p), as a whole package, is licensed under GNU GPL v2.0. Read LICENSE for more details.
+
+## Contact
+If you have any question in applying RBF-AR(p), please don't hesitate to contact us.
+Homepage: www.bruceluo.net
+Email: luozhiling@zju.edu.cn, alex4814.fu@gmail.com
 
 
 

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Data Training using RBF-AR(p)</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-08-05"><meta name="DC.source" content="demo.m"><style type="text/css">
+      --><title>Data Training using RBF-AR(p)</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-08-06"><meta name="DC.source" content="demo.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -80,8 +80,8 @@ X_train = X(1:q, :);
 y_train = y(1:q, :);
 X_test = X(q+1 : end, :);
 y_test = y(q+1 : end, :);
-</pre><h2>Tuning model parameters to train data model using RBF-AR(p)<a name="3"></a></h2><pre class="codeinput">sigma = 1:10;
-lambda = 1:2;
+</pre><h2>Tuning model parameters to train data model using RBF-AR(p)<a name="3"></a></h2><pre class="codeinput">sigma = 1:1;
+lambda = 1:1;
 
 p = 2;  <span class="comment">% the length of _ro_ parameters, the order for AR analysis</span>
 rho = zeros(p, 1);
@@ -89,7 +89,8 @@ rho = zeros(p, 1);
 rho_lower = [-1, -1];
 rho_upper = [0, 0];
 rho_step = [0.1, 0.1];
-</pre><h2>Tune model parameter <i>sigma</i> and _lambda<a name="4"></a></h2><pre class="codeinput">bestmodel = gartune(X_train, y_train, rho_lower, rho_upper, rho_step, sigma, lambda);
+iteration = 2;
+</pre><h2>Tune model parameter <i>sigma</i> and _lambda<a name="4"></a></h2><pre class="codeinput">bestmodel = gartune(X_train, y_train, rho_lower, rho_upper, rho_step, iteration, sigma, lambda);
 </pre><h2>Predict the test data<a name="5"></a></h2><pre class="codeinput">y_history = y(q - p + 1 : end - 1);
 y_predict = garpredict(X_test, y_history, bestmodel);
 </pre><h2>(Optional) Add differences back to get real predicted value<a name="6"></a></h2><pre class="codeinput">ay_predict = y_predict + y0(q+1 : end-1);
@@ -124,8 +125,8 @@ y_test = y(q+1 : end, :);
 
 
 %% Tuning model parameters to train data model using RBF-AR(p)
-sigma = 1:10;
-lambda = 1:2;
+sigma = 1:1;
+lambda = 1:1;
 
 p = 2;  % the length of _ro_ parameters, the order for AR analysis
 rho = zeros(p, 1);
@@ -133,9 +134,10 @@ rho = zeros(p, 1);
 rho_lower = [-1, -1];
 rho_upper = [0, 0];
 rho_step = [0.1, 0.1];
+iteration = 2;
 
 %% Tune model parameter _sigma_ and _lambda
-bestmodel = gartune(X_train, y_train, rho_lower, rho_upper, rho_step, sigma, lambda);
+bestmodel = gartune(X_train, y_train, rho_lower, rho_upper, rho_step, iteration, sigma, lambda);
 
 
 %% Predict the test data

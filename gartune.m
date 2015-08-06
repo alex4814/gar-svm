@@ -1,4 +1,4 @@
-function best_model = gartune(X, y, rho_lower, rho_upper, rho_step, sigma, lambda)
+function best_model = gartune(X, y, rho_lower, rho_upper, rho_step, iteration, sigma, lambda)
 %GARTUNE  Tuning model parameters for rho, sigma, and lambda.
 %   model = GARTUNE(X, y, [-0.7, -0.5], 1:5, 1:3)
 %   
@@ -17,11 +17,11 @@ assert(length(rho_lower) == length(rho_upper));
 assert(length(rho_upper) == length(rho_step));
 
 n = length(rho_step);
-rho = rho_lower;
+rho = (rho_lower + rho_upper) / 2;
 
 for s = sigma
     for l = lambda
-        
+        for cnt = 1:iteration % iteration
         for i = 1:n
             
             rhos = rho_lower(i):rho_step(i):rho_upper(i);
@@ -59,7 +59,7 @@ for s = sigma
             end
 
         end
-        
+        end
     end 
 end
 
